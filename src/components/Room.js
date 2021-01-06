@@ -25,6 +25,8 @@ const Lights = () => {
   );
 };
 
+
+
 export default function Room(props) {
   return (
     <Canvas shadowMap colorManagement camera={{ position: [35, 20, 35], fov: 75 }}>

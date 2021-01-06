@@ -10,3 +10,26 @@
     top: 60%;
     left: 25%;
 }
+
+@media (max-width: 1200px) {
+    .picker-container {
+        left: 15%;
+    }
+}
+
+@media (max-width: 950px) {
+    .picker-container {
+        left: 10%;
+    }
+}
+
+@media (max-width: 750px) {
+    .picker-container {
+        top: 85%;
+    }
+
+    .picker {
+        width: 70px !important;
+        height: 70px !important;
+    }
+}

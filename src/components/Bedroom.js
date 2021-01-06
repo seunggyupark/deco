@@ -9,31 +9,63 @@ title: Simple Isometric Bed Room
 import React, { useEffect, useRef, useCallback } from "react";
 import { useGLTF } from "drei";
 import { proxy, useProxy } from "valtio";
+import { a, useSpring } from "@react-spring/three";
 
 const state = proxy({
   pickedMaterial: "null",
   materials: {
-    MagonyLight: "#ffffff",
-    BrownDark: "#ffffff",
-    OrangeMedium: "#ffffff",
-    OrangeLight: "#ffffff",
-    BrownMedium: "#ffffff",
-    GreenLight: "#ffffff",
-    GreenDark: "#ffffff",
+    MagonyLight: "#8c705d",
+    BrownDark: "#ad8e78",
+    OrangeMedium: "#EC7E87",
+    OrangeLight: "#F0949B",
+    BrownMedium: "#b4b89e",
+    GreenLight: "#d5dbb6",
+    GreenDark: "#5d8e9c",
   },
 });
 
 export default function Model(props) {
   const group = useRef();
   const { nodes, materials } = useGLTF("/bedroom.glb");
-
-  const snap = useProxy(state);
   const { pickedColor } = props;
+  // Snapshot of the valiteo state
+  const snap = useProxy(state);
+
+  // Animation for changing colors
+  const animColor = useSpring({
+    config: { tension: 70 },
+    MagonyLight: snap.materials.MagonyLight,
+    BrownDark: snap.materials.BrownDark,
+    OrangeMedium: snap.materials.OrangeMedium,
+    OrangeLight: snap.materials.OrangeLight,
+    BrownMedium: snap.materials.BrownMedium,
+    GreenLight: snap.materials.GreenLight,
+    GreenDark: snap.materials.GreenDark
+  });
+
+  // Initial load spinning animation
+  const spinAnimation = useSpring({config: { mass: 2, tension: 55, friction: 35 }, rotation: [-Math.PI / 2, 0, 2*Math.PI], from: {rotation: [-Math.PI / 2, 0, 0]}});
+
+  // Initial load to change furniture color to white
+  useEffect(() => setTimeout(() => {
+    state.materials = {
+      MagonyLight: "#ffffff",
+      BrownDark: "#ffffff",
+      OrangeMedium: "#ffffff",
+      OrangeLight: "#ffffff",
+      BrownMedium: "#ffffff",
+      GreenLight: "#ffffff",
+      GreenDark: "#ffffff",
+    };
+  }, 2300), [])
+
+  // Reset function for picked material
   const resetPickedMaterial = useCallback(
     () => (state.pickedMaterial = null),
     []
   );
 
+  // Looks to see if a color and a material was picked to change the color
   useEffect(() => {
     if (pickedColor && snap.pickedMaterial) {
       state.materials[snap.pickedMaterial] = pickedColor;
@@ -46,12 +78,12 @@ export default function Model(props) {
       ref={group}
       {...props}
       dispose={null}
-      onPointerMissed={resetPickedMaterial}
+      onPointerOut={resetPickedMaterial}
       onPointerDown={(e) => (
         e.stopPropagation(), (state.pickedMaterial = e.object.material.name)
       )}
     >
-      <group rotation={[-Math.PI / 2, 0, 0]}>
+      <a.group rotation={spinAnimation.rotation}>
         <group rotation={[Math.PI / 2, 0, 0]}>
           <group position={[0, -0.02, 0]} scale={[24.23, 0.46, 24.23]}>
             <mesh
@@ -62,26 +94,26 @@ export default function Model(props) {
           </group>
           {/* BED */}
           <group position={[-7.5, -1.57, -3.29]} scale={[1.36, 1.41, 1.41]}>
-            <mesh
+            <a.mesh
               receiveShadow
               material={materials.MagonyLight}
-              material-color={snap.materials.MagonyLight}
+              material-color={ animColor.MagonyLight }
               geometry={nodes.pCube7_MagonyLight_0.geometry}
             />
             <mesh
               material={materials.BrownLight}
               geometry={nodes.pCube7_BrownLight_0.geometry}
             />
-            <mesh
+            <a.mesh
               receiveShadow
               material={materials.OrangeMedium}
               geometry={nodes.pCube7_OrangeMedium_0.geometry}
-              material-color={snap.materials.OrangeMedium}
+              material-color={animColor.OrangeMedium}
             />
-            <mesh
+            <a.mesh
               material={materials.OrangeLight}
               geometry={nodes.pCube7_OrangeLight_0.geometry}
-              material-color={snap.materials.OrangeLight}
+              material-color={animColor.OrangeLight}
             />
           </group>
           {/* CHAIR */}
@@ -91,11 +123,11 @@ export default function Model(props) {
             scale={[1.16, 1.16, 1.16]}
           >
             <group position={[0, 0.11, 0]}>
-              <mesh
+              <a.mesh
                 castShadow
                 material={materials.BrownMedium}
                 geometry={nodes.polySurface241_BrownMedium_0.geometry}
-                material-color={snap.materials.BrownMedium}
+                material-color={animColor.BrownMedium}
               />
               <mesh
                 castShadow
@@ -187,10 +219,10 @@ export default function Model(props) {
               material={materials.BrownLight}
               geometry={nodes.pCube55_BrownLight_0.geometry}
             />
-            <mesh
+            <a.mesh
               material={materials.BrownDark}
               geometry={nodes.pCube55_BrownDark_0.geometry}
-              material-color={snap.materials.BrownDark}
+              material-color={animColor.BrownDark}
             />
           </group>
           {/* LEFT WALL */}
@@ -223,10 +255,10 @@ export default function Model(props) {
           </group>
           {/* RUG */}
           <group position={[2.23, 0.1, 1.21]} scale={[16.92, 0.29, 18.47]}>
-            <mesh
+            <a.mesh
               receiveShadow
               material={materials.GreenDark}
-              material-color={state.materials.GreenDark}
+              material-color={animColor.GreenDark}
               geometry={nodes.pCube66_GreenDark_0.geometry}
             />
           </group>
@@ -250,7 +282,6 @@ export default function Model(props) {
           <mesh
             material={materials.GreenLight}
             geometry={nodes.polySurface280_GreenLight_0.geometry}
-            material-color={snap.materials.GreenLight}
           />
           <mesh
             material={materials.MagonyLight}
@@ -386,10 +417,11 @@ export default function Model(props) {
             />
           </group>
           {/* TRASHCAN */}
-          <mesh
+          <a.mesh
             castShadow
             material={materials.GreenLight}
             geometry={nodes.polySurface416_GreenLight_0.geometry}
+            material-color={animColor.GreenLight}
           />
           <mesh
             material={materials.MagonyDark}
@@ -486,7 +518,7 @@ export default function Model(props) {
             geometry={nodes.polySurface248_GreenLight_0.geometry}
           />
         </group>
-      </group>
+      </a.group>
     </group>
   );
 }
