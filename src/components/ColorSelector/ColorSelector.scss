@@ -1,0 +1,20 @@
+.colorSelector-gridContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-row: 13;
+    grid-column: 1 / 17;
+    width: 100%;
+}
+
+.colorSelector-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 0px 20px;
+    height: 100%;
+    z-index: 99;
+
+    background-color:#747474;
+    border-radius: 4px;
+}

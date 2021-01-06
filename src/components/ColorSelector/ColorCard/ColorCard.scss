@@ -1,0 +1,12 @@
+.card {
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    margin: 6px;
+    transition: 0.15s ease-in;
+}
+
+.selected {
+    border: 2px white solid;
+    transform: translateY(-4px);
+}

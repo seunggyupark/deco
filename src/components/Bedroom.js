@@ -6,157 +6,489 @@ source: https://sketchfab.com/3d-models/simple-isometric-bed-room-3a59b46e3c9a42
 title: Simple Isometric Bed Room
 */
 
-import React, { useRef } from 'react'
-import { useGLTF } from 'drei'
+import React, { useEffect, useRef, useCallback } from "react";
+import { useGLTF } from "drei";
+import { proxy, useProxy } from "valtio";
+
+const state = proxy({
+  pickedMaterial: "null",
+  materials: {
+    MagonyLight: "#ffffff",
+    BrownDark: "#ffffff",
+    OrangeMedium: "#ffffff",
+    OrangeLight: "#ffffff",
+    BrownMedium: "#ffffff",
+    GreenLight: "#ffffff",
+    GreenDark: "#ffffff",
+  },
+});
 
 export default function Model(props) {
-  const group = useRef()
-  const { nodes, materials } = useGLTF('/bedroom.glb');
+  const group = useRef();
+  const { nodes, materials } = useGLTF("/bedroom.glb");
+
+  const snap = useProxy(state);
+  const { pickedColor } = props;
+  const resetPickedMaterial = useCallback(
+    () => (state.pickedMaterial = null),
+    []
+  );
+
+  useEffect(() => {
+    if (pickedColor && snap.pickedMaterial) {
+      state.materials[snap.pickedMaterial] = pickedColor;
+      resetPickedMaterial();
+    };
+  }, [pickedColor, resetPickedMaterial, snap.pickedMaterial]);
 
   return (
-    <group ref={group} {...props} dispose={null}>
+    <group
+      ref={group}
+      {...props}
+      dispose={null}
+      onPointerMissed={resetPickedMaterial}
+      onPointerDown={(e) => (
+        e.stopPropagation(), (state.pickedMaterial = e.object.material.name)
+      )}
+    >
       <group rotation={[-Math.PI / 2, 0, 0]}>
         <group rotation={[Math.PI / 2, 0, 0]}>
           <group position={[0, -0.02, 0]} scale={[24.23, 0.46, 24.23]}>
-            <mesh receiveShadow material={materials.BrownMedium} geometry={nodes.pCube1_BrownMedium_0.geometry} />
+            <mesh
+              receiveShadow
+              material={materials.BrownLight}
+              geometry={nodes.pCube1_BrownMedium_0.geometry}
+            />
           </group>
           {/* BED */}
           <group position={[-7.5, -1.57, -3.29]} scale={[1.36, 1.41, 1.41]}>
-            <mesh receiveShadow material={materials.MagonyLight} geometry={nodes.pCube7_MagonyLight_0.geometry}/>
-            <mesh material={materials.BrownLight} geometry={nodes.pCube7_BrownLight_0.geometry} />
-            <mesh receiveShadow material={materials.OrangeMedium} geometry={nodes.pCube7_OrangeMedium_0.geometry} />
-            <mesh material={materials.OrangeLight} geometry={nodes.pCube7_OrangeLight_0.geometry} />
+            <mesh
+              receiveShadow
+              material={materials.MagonyLight}
+              material-color={snap.materials.MagonyLight}
+              geometry={nodes.pCube7_MagonyLight_0.geometry}
+            />
+            <mesh
+              material={materials.BrownLight}
+              geometry={nodes.pCube7_BrownLight_0.geometry}
+            />
+            <mesh
+              receiveShadow
+              material={materials.OrangeMedium}
+              geometry={nodes.pCube7_OrangeMedium_0.geometry}
+              material-color={snap.materials.OrangeMedium}
+            />
+            <mesh
+              material={materials.OrangeLight}
+              geometry={nodes.pCube7_OrangeLight_0.geometry}
+              material-color={snap.materials.OrangeLight}
+            />
           </group>
           {/* CHAIR */}
-          <group position={[2.01, -0.05, 0.82]} rotation={[0, 0.23, 0]} scale={[1.16, 1.16, 1.16]}>
+          <group
+            position={[2.01, -0.05, 0.82]}
+            rotation={[0, 0.23, 0]}
+            scale={[1.16, 1.16, 1.16]}
+          >
             <group position={[0, 0.11, 0]}>
-              <mesh castShadow material={materials.BrownMedium} geometry={nodes.polySurface241_BrownMedium_0.geometry} />
-              <mesh castShadow material={materials.MagonyLight} geometry={nodes.polySurface241_MagonyLight_0.geometry} />
+              <mesh
+                castShadow
+                material={materials.BrownMedium}
+                geometry={nodes.polySurface241_BrownMedium_0.geometry}
+                material-color={snap.materials.BrownMedium}
+              />
+              <mesh
+                castShadow
+                material={materials.MagonyLight}
+                geometry={nodes.polySurface241_MagonyLight_0.geometry}
+              />
             </group>
           </group>
           {/* DESK */}
           <group position={[0.94, -0.01, -0.45]}>
-            <mesh castShadow material={materials.MagonyLight} geometry={nodes.polySurface265_MagonyLight_0.geometry} />
+            <mesh
+              castShadow
+              material={materials.MagonyLight}
+              geometry={nodes.polySurface265_MagonyLight_0.geometry}
+            />
           </group>
-          <group position={[2.71, 3.74, -2.18]} rotation={[0, 0.49, 0]} scale={[0.41, 0.41, 0.41]}>
-            <mesh   material={materials.white} geometry={nodes.pCylinder3_white_0.geometry} />
+          <group
+            position={[2.71, 3.74, -2.18]}
+            rotation={[0, 0.49, 0]}
+            scale={[0.41, 0.41, 0.41]}
+          >
+            <mesh
+              material={materials.white}
+              geometry={nodes.pCylinder3_white_0.geometry}
+            />
           </group>
-          <group position={[5.58, 6.37, -6.7]} rotation={[0, -0.15, 0]} scale={[1.68, 0.07, 1.39]}>
-            <mesh   material={materials.MagonyDark} geometry={nodes.pCube50_MagonyDark_0.geometry} />
+          <group
+            position={[5.58, 6.37, -6.7]}
+            rotation={[0, -0.15, 0]}
+            scale={[1.68, 0.07, 1.39]}
+          >
+            <mesh
+              material={materials.MagonyDark}
+              geometry={nodes.pCube50_MagonyDark_0.geometry}
+            />
           </group>
-          <group position={[6.59, 6.38, -8.01]} rotation={[Math.PI / 2, Math.PI / 2, 0]} scale={[0.04, 0.29, 0.04]}>
-            <mesh   material={materials.MagonyDark} geometry={nodes.pCylinder6_MagonyDark_0.geometry} />
+          <group
+            position={[6.59, 6.38, -8.01]}
+            rotation={[Math.PI / 2, Math.PI / 2, 0]}
+            scale={[0.04, 0.29, 0.04]}
+          >
+            <mesh
+              material={materials.MagonyDark}
+              geometry={nodes.pCylinder6_MagonyDark_0.geometry}
+            />
           </group>
-          <group position={[8.74, 6.47, -7.75]} rotation={[0, -0.43, 0]} scale={[2.99, 0.1, 1.9]}>
-            <mesh   material={materials.OrangeLight} geometry={nodes.pCube53_OrangeLight_0.geometry} />
-            <mesh   material={materials.white} geometry={nodes.pCube53_white_0.geometry} />
+          <group
+            position={[8.74, 6.47, -7.75]}
+            rotation={[0, -0.43, 0]}
+            scale={[2.99, 0.1, 1.9]}
+          >
+            <mesh
+              material={materials.BlueMiddle}
+              geometry={nodes.pCube53_OrangeLight_0.geometry}
+            />
+            <mesh
+              material={materials.white}
+              geometry={nodes.pCube53_white_0.geometry}
+            />
           </group>
-          <group position={[7.72, 6.38, -6.14]} rotation={[0, -0.65, 0]} scale={[1.59, 0.08, 1.14]}>
-            <mesh   material={materials.BlueMiddle} geometry={nodes.pCube54_BlueMiddle_0.geometry} />
+          <group
+            position={[7.72, 6.38, -6.14]}
+            rotation={[0, -0.65, 0]}
+            scale={[1.59, 0.08, 1.14]}
+          >
+            <mesh
+              material={materials.BlueMiddle}
+              geometry={nodes.pCube54_BlueMiddle_0.geometry}
+            />
           </group>
           <group position={[-7.75, 2.42, 6.9]} scale={[0.4, 0.62, 0.4]}>
-            <mesh material={materials.blinn2} geometry={nodes.pCylinder7_blinn2_0.geometry} />
-            <mesh material={materials.Grey} geometry={nodes.pCylinder7_Grey_0.geometry} />
+            <mesh
+              material={materials.blinn2}
+              geometry={nodes.pCylinder7_blinn2_0.geometry}
+            />
+            <mesh
+              material={materials.Grey}
+              geometry={nodes.pCylinder7_Grey_0.geometry}
+            />
           </group>
-          <group position={[0, 12.71, -11.45]} rotation={[Math.PI / 2, 0, 0]} scale={[24.23, 0.46, 24.23]}>
+          <group
+            position={[0, 12.71, -11.45]}
+            rotation={[Math.PI / 2, 0, 0]}
+            scale={[24.23, 0.46, 24.23]}
+          >
             {/* RIGHT WALL */}
-            <mesh receiveShadow material={materials.BrownLight} geometry={nodes.pCube55_BrownLight_0.geometry} />
-            <mesh material={materials.BrownDark} geometry={nodes.pCube55_BrownDark_0.geometry} />
+            <mesh
+              receiveShadow
+              material={materials.BrownLight}
+              geometry={nodes.pCube55_BrownLight_0.geometry}
+            />
+            <mesh
+              material={materials.BrownDark}
+              geometry={nodes.pCube55_BrownDark_0.geometry}
+              material-color={snap.materials.BrownDark}
+            />
           </group>
           {/* LEFT WALL */}
-          <group position={[-11.93, 12.6, 1.24]} rotation={[Math.PI / 2, 0, -Math.PI / 2]} scale={[24.23, 0.46, 24.23]}>
-            <mesh receiveShadow material={materials.BrownLight} geometry={nodes.pCube56_BrownLight_0.geometry} />
+          <group
+            position={[-11.93, 12.6, 1.24]}
+            rotation={[Math.PI / 2, 0, -Math.PI / 2]}
+            scale={[24.23, 0.46, 24.23]}
+          >
+            <mesh
+              receiveShadow
+              material={materials.BrownLight}
+              geometry={nodes.pCube56_BrownLight_0.geometry}
+            />
           </group>
           {/* WALL SHELF */}
           <group position={[5.16, 10.8, -9.55]} scale={[12.05, 0.32, 3.33]}>
-            <mesh castShadow material={materials.MagonyLight} geometry={nodes.pCube57_MagonyLight_0.geometry} />
+            <mesh
+              castShadow
+              material={materials.MagonyLight}
+              geometry={nodes.pCube57_MagonyLight_0.geometry}
+            />
           </group>
           {/* WALL SHELF */}
           <group position={[1.27, 13.24, -9.38]} scale={[12.05, 0.32, 3.61]}>
-            <mesh castShadow material={materials.MagonyLight} geometry={nodes.pCube58_MagonyLight_0.geometry} />
+            <mesh
+              castShadow
+              material={materials.MagonyLight}
+              geometry={nodes.pCube58_MagonyLight_0.geometry}
+            />
           </group>
           {/* RUG */}
           <group position={[2.23, 0.1, 1.21]} scale={[16.92, 0.29, 18.47]}>
-            <mesh receiveShadow material={materials.GreenDark} geometry={nodes.pCube66_GreenDark_0.geometry} />
+            <mesh
+              receiveShadow
+              material={materials.GreenDark}
+              material-color={state.materials.GreenDark}
+              geometry={nodes.pCube66_GreenDark_0.geometry}
+            />
           </group>
           {/* WINDOW */}
-          <mesh   material={materials.Grey} geometry={nodes.polySurface385_Grey_0.geometry} />
-          <mesh   material={materials.OcreLight} geometry={nodes.pCube79_OcreLight_0.geometry} />
-          <mesh   material={materials.BrownLight} geometry={nodes.polySurface259_BrownLight_0.geometry} />
-          <mesh   material={materials.MagonyDark} geometry={nodes.pCylinder15_MagonyDark_0.geometry} />
-          <mesh   material={materials.GreenLight} geometry={nodes.polySurface280_GreenLight_0.geometry} />
-          <mesh   material={materials.MagonyLight} geometry={nodes.polySurface280_MagonyLight_0.geometry} />
+          <mesh
+            material={materials.Grey}
+            geometry={nodes.polySurface385_Grey_0.geometry}
+          />
+          <mesh
+            material={materials.OcreLight}
+            geometry={nodes.pCube79_OcreLight_0.geometry}
+          />
+          <mesh
+            material={materials.BrownLight}
+            geometry={nodes.polySurface259_BrownLight_0.geometry}
+          />
+          <mesh
+            material={materials.MagonyDark}
+            geometry={nodes.pCylinder15_MagonyDark_0.geometry}
+          />
+          <mesh
+            material={materials.GreenLight}
+            geometry={nodes.polySurface280_GreenLight_0.geometry}
+            material-color={snap.materials.GreenLight}
+          />
+          <mesh
+            material={materials.MagonyLight}
+            geometry={nodes.polySurface280_MagonyLight_0.geometry}
+          />
           {/* CLOSET DOOR */}
           <group position={[0, 0, -11.6]}>
-            <mesh   material={materials.MetalHandle} geometry={nodes.polySurface289_MetalHandle_0.geometry} />
-            <mesh   material={materials.MagonyLight} geometry={nodes.polySurface289_MagonyLight_0.geometry} />
-            <mesh   material={materials.BrownDark} geometry={nodes.polySurface289_BrownDark_0.geometry} />
+            <mesh
+              material={materials.MetalHandle}
+              geometry={nodes.polySurface289_MetalHandle_0.geometry}
+            />
+            <mesh
+              material={materials.MagonyLight}
+              geometry={nodes.polySurface289_MagonyLight_0.geometry}
+            />
+            <mesh
+              material={materials.BrownDark}
+              geometry={nodes.polySurface289_BrownDark_0.geometry}
+            />
           </group>
           {/* CLOSET DOOR */}
           <group position={[0, 0, -11.6]}>
-            <mesh   material={materials.MagonyLight} geometry={nodes.polySurface292_MagonyLight_0.geometry} />
-            <mesh   material={materials.BrownDark} geometry={nodes.polySurface292_BrownDark_0.geometry} />
-            <mesh   material={materials.MetalHandle} geometry={nodes.polySurface292_MetalHandle_0.geometry} />
+            <mesh
+              material={materials.MagonyLight}
+              geometry={nodes.polySurface292_MagonyLight_0.geometry}
+            />
+            <mesh
+              material={materials.BrownDark}
+              geometry={nodes.polySurface292_BrownDark_0.geometry}
+            />
+            <mesh
+              material={materials.MetalHandle}
+              geometry={nodes.polySurface292_MetalHandle_0.geometry}
+            />
           </group>
-          <mesh   material={materials.BrownDark} geometry={nodes.polySurface288_BrownDark_0.geometry} />
-          <mesh   material={materials.GreenMIddle} geometry={nodes.polySurface288_GreenMIddle_0.geometry} />
-          <mesh   material={materials.BlueLight} geometry={nodes.polySurface283_BlueLight_0.geometry} />
-          <mesh   material={materials.white} geometry={nodes.polySurface283_white_0.geometry} />
-          <mesh   material={materials.lambert1} geometry={nodes.polySurface283_lambert1_0.geometry} />
-          <mesh   material={materials.OrangeLight} geometry={nodes.polySurface283_OrangeLight_0.geometry} />
-          <mesh   material={materials.BlueMiddle} geometry={nodes.polySurface283_BlueMiddle_0.geometry} />
-          <mesh   material={materials.OrangeMedium} geometry={nodes.polySurface283_OrangeMedium_0.geometry} />
+          <mesh
+            material={materials.BrownDark}
+            geometry={nodes.polySurface288_BrownDark_0.geometry}
+          />
+          <mesh
+            material={materials.GreenMIddle}
+            geometry={nodes.polySurface288_GreenMIddle_0.geometry}
+          />
+          <mesh
+            material={materials.BlueLight}
+            geometry={nodes.polySurface283_BlueLight_0.geometry}
+          />
+          <mesh
+            material={materials.white}
+            geometry={nodes.polySurface283_white_0.geometry}
+          />
+          <mesh
+            material={materials.lambert1}
+            geometry={nodes.polySurface283_lambert1_0.geometry}
+          />
+          <mesh
+            material={materials.BlueLight}
+            geometry={nodes.polySurface283_OrangeLight_0.geometry}
+          />
+          <mesh
+            material={materials.GreenMIddle}
+            geometry={nodes.polySurface283_BlueMiddle_0.geometry}
+          />
+          <mesh
+            material={materials.BlueMiddle}
+            geometry={nodes.polySurface283_OrangeMedium_0.geometry}
+          />
           <group position={[0, -18.29, 0]}>
-            <mesh   material={materials.Grey} geometry={nodes.polySurface304_Grey_0.geometry} />
-            <mesh   material={materials.white} geometry={nodes.polySurface304_white_0.geometry} />
-            <mesh   material={materials.OrangeLight} geometry={nodes.polySurface304_OrangeLight_0.geometry} />
-            <mesh   material={materials.GreypurpleMiddle} geometry={nodes.polySurface304_GreypurpleMiddle_0.geometry} />
-            <mesh   material={materials.BlueMiddle} geometry={nodes.polySurface304_BlueMiddle_0.geometry} />
-            <mesh   material={materials.OrangeMedium} geometry={nodes.polySurface304_OrangeMedium_0.geometry} />
+            <mesh
+              material={materials.Grey}
+              geometry={nodes.polySurface304_Grey_0.geometry}
+            />
+            <mesh
+              material={materials.white}
+              geometry={nodes.polySurface304_white_0.geometry}
+            />
+            <mesh
+              material={materials.BlueLight}
+              geometry={nodes.polySurface304_OrangeLight_0.geometry}
+            />
+            <mesh
+              material={materials.GreypurpleMiddle}
+              geometry={nodes.polySurface304_GreypurpleMiddle_0.geometry}
+            />
+            <mesh
+              material={materials.BlueMiddle}
+              geometry={nodes.polySurface304_BlueMiddle_0.geometry}
+            />
+            <mesh
+              material={materials.BlueMiddle}
+              geometry={nodes.polySurface304_OrangeMedium_0.geometry}
+            />
           </group>
           {/* LAPTOP */}
           <group position={[0, -37, 0]}>
-            <mesh   material={materials.MagonyDark} geometry={nodes.polySurface382_MagonyDark_0.geometry} />
-            <mesh   material={materials.white} geometry={nodes.polySurface382_white_0.geometry} />
-            <mesh   material={materials.GreypurpleMiddle} geometry={nodes.polySurface382_GreypurpleMiddle_0.geometry} />
-            <mesh   material={materials.lambert25} geometry={nodes.polySurface382_lambert25_0.geometry} />
+            <mesh
+              material={materials.MagonyDark}
+              geometry={nodes.polySurface382_MagonyDark_0.geometry}
+            />
+            <mesh
+              material={materials.white}
+              geometry={nodes.polySurface382_white_0.geometry}
+            />
+            <mesh
+              material={materials.GreypurpleMiddle}
+              geometry={nodes.polySurface382_GreypurpleMiddle_0.geometry}
+            />
+            <mesh
+              material={materials.lambert25}
+              geometry={nodes.polySurface382_lambert25_0.geometry}
+            />
           </group>
           <group position={[-8, 0, 0]}>
-            <mesh   material={materials.OrangeDark} geometry={nodes.polySurface392_OrangeDark_0.geometry} />
-            <mesh   material={materials.BlueLight} geometry={nodes.polySurface392_BlueLight_0.geometry} />
-            <mesh   material={materials.MagonyLight} geometry={nodes.polySurface392_MagonyLight_0.geometry} />
-            <mesh   material={materials.OcreLight} geometry={nodes.polySurface392_OcreLight_0.geometry} />
-            <mesh   material={materials.OrangeLight} geometry={nodes.polySurface392_OrangeLight_0.geometry} />
+            <mesh
+              material={materials.GreenLight}
+              geometry={nodes.polySurface392_OrangeDark_0.geometry}
+            />
+            <mesh
+              material={materials.GreenMIddle}
+              geometry={nodes.polySurface392_BlueLight_0.geometry}
+            />
+            <mesh
+              material={materials.MagonyLight}
+              geometry={nodes.polySurface392_MagonyLight_0.geometry}
+            />
+            <mesh
+              material={materials.OcreLight}
+              geometry={nodes.polySurface392_OcreLight_0.geometry}
+            />
+            <mesh
+              material={materials.GreenMIddle}
+              geometry={nodes.polySurface392_OrangeLight_0.geometry}
+            />
           </group>
           {/* TRASHCAN */}
-          <mesh castShadow material={materials.GreenLight} geometry={nodes.polySurface416_GreenLight_0.geometry} />
-          <mesh   material={materials.MagonyDark} geometry={nodes.polySurface416_MagonyDark_0.geometry} />
-          <mesh   material={materials.white} geometry={nodes.polySurface417_white_0.geometry} />
-          <mesh   material={materials.white} geometry={nodes.polySurface418_white_0.geometry} />
-          <mesh   material={materials.white} geometry={nodes.polySurface419_white_0.geometry} />
-          <mesh   material={materials.white} geometry={nodes.polySurface420_white_0.geometry} />
-          <mesh   material={materials.BrownLight} geometry={nodes.polySurface422_BrownLight_0.geometry} />
-          <mesh   material={materials.BrownDark} geometry={nodes.polySurface422_BrownDark_0.geometry} />
-          <mesh   material={materials.white} geometry={nodes.polySurface423_white_0.geometry} />
-          <mesh   material={materials.BrownDark} geometry={nodes.polySurface423_BrownDark_0.geometry} />
-          <mesh   material={materials.BrownDark} geometry={nodes.polySurface426_BrownDark_0.geometry} />
-          <mesh   material={materials.white} geometry={nodes.polySurface426_white_0.geometry} />
-          <mesh   material={materials.BrownDark} geometry={nodes.polySurface428_BrownDark_0.geometry} />
-          <mesh   material={materials.white} geometry={nodes.polySurface428_white_0.geometry} />
-          <mesh   material={materials.BrownDark} geometry={nodes.polySurface430_BrownDark_0.geometry} />
-          <mesh   material={materials.white} geometry={nodes.polySurface430_white_0.geometry} />
-          <mesh   material={materials.BrownDark} geometry={nodes.polySurface432_BrownDark_0.geometry} />
-          <mesh   material={materials.white} geometry={nodes.polySurface432_white_0.geometry} />
-          <mesh   material={materials.BlueLight} geometry={nodes.polySurface386_BlueLight_0.geometry} />
-          <mesh   material={materials.BlueMiddle} geometry={nodes.polySurface386_BlueMiddle_0.geometry} />
-          <mesh   material={materials.BlueDark} geometry={nodes.polySurface386_BlueDark_0.geometry} />
-          <mesh   material={materials.BrownDark} geometry={nodes.polySurface386_BrownDark_0.geometry} />
-          <mesh castShadow material={materials.MagonyLight} geometry={nodes.polySurface248_MagonyLight_0.geometry} />
-          <mesh   material={materials.GreenLight} geometry={nodes.polySurface248_GreenLight_0.geometry} />
+          <mesh
+            castShadow
+            material={materials.GreenLight}
+            geometry={nodes.polySurface416_GreenLight_0.geometry}
+          />
+          <mesh
+            material={materials.MagonyDark}
+            geometry={nodes.polySurface416_MagonyDark_0.geometry}
+          />
+          <mesh
+            material={materials.white}
+            geometry={nodes.polySurface417_white_0.geometry}
+          />
+          <mesh
+            material={materials.white}
+            geometry={nodes.polySurface418_white_0.geometry}
+          />
+          <mesh
+            material={materials.white}
+            geometry={nodes.polySurface419_white_0.geometry}
+          />
+          <mesh
+            material={materials.white}
+            geometry={nodes.polySurface420_white_0.geometry}
+          />
+          <mesh
+            material={materials.BrownLight}
+            geometry={nodes.polySurface422_BrownLight_0.geometry}
+          />
+          <mesh
+            material={materials.BrownDark}
+            geometry={nodes.polySurface422_BrownDark_0.geometry}
+          />
+          <mesh
+            material={materials.white}
+            geometry={nodes.polySurface423_white_0.geometry}
+          />
+          <mesh
+            material={materials.BrownDark}
+            geometry={nodes.polySurface423_BrownDark_0.geometry}
+          />
+          <mesh
+            material={materials.BrownDark}
+            geometry={nodes.polySurface426_BrownDark_0.geometry}
+          />
+          <mesh
+            material={materials.white}
+            geometry={nodes.polySurface426_white_0.geometry}
+          />
+          <mesh
+            material={materials.BrownDark}
+            geometry={nodes.polySurface428_BrownDark_0.geometry}
+          />
+          <mesh
+            material={materials.white}
+            geometry={nodes.polySurface428_white_0.geometry}
+          />
+          <mesh
+            material={materials.BrownDark}
+            geometry={nodes.polySurface430_BrownDark_0.geometry}
+          />
+          <mesh
+            material={materials.white}
+            geometry={nodes.polySurface430_white_0.geometry}
+          />
+          <mesh
+            material={materials.BrownDark}
+            geometry={nodes.polySurface432_BrownDark_0.geometry}
+          />
+          <mesh
+            material={materials.white}
+            geometry={nodes.polySurface432_white_0.geometry}
+          />
+          <mesh
+            material={materials.BlueLight}
+            geometry={nodes.polySurface386_BlueLight_0.geometry}
+          />
+          <mesh
+            material={materials.BlueMiddle}
+            geometry={nodes.polySurface386_BlueMiddle_0.geometry}
+          />
+          <mesh
+            material={materials.BlueDark}
+            geometry={nodes.polySurface386_BlueDark_0.geometry}
+          />
+          <mesh
+            material={materials.BrownDark}
+            geometry={nodes.polySurface386_BrownDark_0.geometry}
+          />
+          <mesh
+            castShadow
+            material={materials.MagonyLight}
+            geometry={nodes.polySurface248_MagonyLight_0.geometry}
+          />
+          {/* BLINDS */}
+          <mesh
+            material={materials.GreenLight}
+            geometry={nodes.polySurface248_GreenLight_0.geometry}
+          />
         </group>
       </group>
     </group>
-  )
+  );
 }
 
-useGLTF.preload('/bedroom.glb')
+useGLTF.preload("/bedroom.glb");

@@ -20,6 +20,7 @@ body,
   margin: 0;
   padding: 0;
   overflow: hidden;
+  position: relative;
 }
 
 header {
@@ -40,4 +41,15 @@ header {
       color: #fff;
     }
   }
+}
+
+.page-container {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template: repeat(16, 6.25%) / repeat(16, 6.25%);
+}
+
+.room-container {
+  grid-area: 2 / 1 / 17 / 17;
 }

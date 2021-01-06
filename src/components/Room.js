@@ -25,12 +25,12 @@ const Lights = () => {
   );
 };
 
-export default function Room() {
+export default function Room(props) {
   return (
     <Canvas shadowMap colorManagement camera={{ position: [35, 20, 35], fov: 75 }}>
       <Lights />
       <Suspense fallback={null}>
-        <Bedroom />
+        <Bedroom pickedColor={props.pickedColor} />
       </Suspense>
       <OrbitControls
         minPolarAngle={Math.PI / 10}

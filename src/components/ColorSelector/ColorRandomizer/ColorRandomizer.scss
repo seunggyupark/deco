@@ -1,0 +1,22 @@
+.ionButton {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    outline: none;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    border: none;
+    margin: 6px;
+    background-color: #ececec;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #cccccc;
+    }
+
+    &:active {
+        background-color: #cccccc;
+        transform: translateY(3px);
+    }
+}
